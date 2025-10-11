@@ -182,8 +182,8 @@ Exits program.
 
 ![usage](https://github.com/user-attachments/assets/6943ae19-017f-4484-82a8-47e31fd0cb79)
 
-
 As I use WSL, I need to do some more commands in PowerShell. Don't do them, if you don't use WSL.
+
 ---
 
 ## 🔒 Security Notes
