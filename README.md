@@ -31,6 +31,8 @@ This one-liner will help you to install.
 mkdir temp; cd temp; wget https://github.com/Kolya080808/SimpleFileHost/releases/download/v1.0/release.zip; unzip release.zip; chmod +x install.sh; sudo ./install.sh; cd ../; rm -r temp
 ```
 
+![install](https://github.com/user-attachments/assets/045042eb-f730-4ec3-9698-a6c697e09a4f)
+
 ### 🛠️ Build
 
 Requirements:
@@ -52,6 +54,9 @@ git clone https://github.com/Kolya080808/SimpleFileHost.git; cd SimpleFileHost; 
 
 After doing one of theese two commands, you can delete the folder.
 
+![build](https://github.com/user-attachments/assets/487b20a6-e88e-4d75-a5cc-61056320acd1)
+
+
 ### ❌Removing
 
 Nothing is required.
@@ -61,6 +66,9 @@ This one-liner should help you to uninstall the binary and optionally remove ins
 ```bash
 wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh; chmod +x remove.sh; ./remove.sh; rm -r remove.sh
 ```
+
+![removing](https://github.com/user-attachments/assets/8e589bd4-da10-44a3-9816-a0287d7f37ff)
+
 
 ---
 
@@ -153,10 +161,6 @@ Accepted units:
 
 If no size is given, only `target.zip` is created (no splitting).
 
----
-
-### 🧳 Send a directory
-
 ```bash
 senddir <directory_path>
 ```
@@ -174,6 +178,12 @@ exit
 ```
 Exits program.
 
+### ⚠️ Example Usage
+
+![usage](https://github.com/user-attachments/assets/6943ae19-017f-4484-82a8-47e31fd0cb79)
+
+
+As I use WSL, I need to do some more commands in PowerShell. Don't do them, if you don't use WSL.
 ---
 
 ## 🔒 Security Notes
