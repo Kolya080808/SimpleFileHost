@@ -28,7 +28,7 @@ if [ -n "$INSTALL_CMD" ]; then
 fi
 
 if [ -f "simplefilehost" ]; then
-    sudo cp build/simplefilehost /usr/bin/simplefilehost
+    sudo cp simplefilehost /usr/bin/simplefilehost
     sudo chmod +x /usr/bin/simplefilehost
     echo "- Install successful!"
     echo "- Run with: simplefilehost"
