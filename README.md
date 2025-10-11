@@ -59,7 +59,7 @@ Nothing is required.
 This one-liner should help you to uninstall the binary and optionally remove installed dependencies.
 
 ```bash
-wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh; chmod +x remove.sh; ./remove.sh
+wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh; chmod +x remove.sh; ./remove.sh; rm -r remove.sh
 ```
 
 ---
