@@ -5,6 +5,7 @@ echo " SimpleFileHost — install script "
 echo "==============================="
 
 INSTALL_CMD=""
+OS=$(uname -s)
 
 if [[ "$OS" == "Linux" ]]; then
     if command -v apt &> /dev/null; then
