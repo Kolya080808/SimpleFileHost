@@ -1,4 +1,4 @@
-# SimpleFileHost (C++)
+# SimpleFileHost
 
 **SimpleFileHost** is a lightweight local file-sharing tool written in C++.
 It lets you send or receive files over Wi-Fi using only a web browser — no configuration, no external servers.
