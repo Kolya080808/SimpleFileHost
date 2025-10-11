@@ -27,7 +27,6 @@ if [ -n "$INSTALL_CMD" ]; then
     eval "$INSTALL_CMD"
 fi
 
-cd ..
 if [ -f "simplefilehost" ]; then
     sudo cp build/simplefilehost /usr/bin/simplefilehost
     sudo chmod +x /usr/bin/simplefilehost
