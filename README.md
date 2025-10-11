@@ -28,7 +28,7 @@ Requirements:
 This one-liner will help you to install.
 
 ```bash
-mkdir temp; cd temp; wget https://github.com/Kolya080808/SimpleFileHost/releases/download/v1.0/release.zip; unzip release.zip; chmod +x install.sh; sudo ./install.sh; cd ../../; rm -r temp
+mkdir temp; cd temp; wget https://github.com/Kolya080808/SimpleFileHost/releases/download/v1.0/release.zip; unzip release.zip; chmod +x install.sh; sudo ./install.sh; cd ../; rm -r temp
 ```
 
 ### 🛠️ Build
