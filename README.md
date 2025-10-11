@@ -42,13 +42,15 @@ Requirements:
 If you want to install it with libqrencode, to build, you will need this command: 
 
 ```bash
-git clone https://github.com//SimpleFileHost.git; cd SimpleFileHost; chmod +x build.sh; ./build.sh
+git clone https://github.com/Kolya080808/SimpleFileHost.git; cd SimpleFileHost; chmod +x build.sh; ./build.sh
 ````
 
 Else, you should do like this:
 ```bash
-git clone https://github.com//SimpleFileHost.git; cd SimpleFileHost; chmod +x build.sh; sed -i 's/\s*libqrencode[-a-z]*//g; s/\s*qrencode//g' build.sh; ./build.sh
+git clone https://github.com/Kolya080808/SimpleFileHost.git; cd SimpleFileHost; chmod +x build.sh; sed -i 's/\s*libqrencode[-a-z]*//g; s/\s*qrencode//g' build.sh; ./build.sh
 ```
+
+After doing one of theese two commands, you can delete the folder.
 
 ### ❌Removing
 
