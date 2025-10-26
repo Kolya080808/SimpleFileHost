@@ -184,7 +184,7 @@ As I use WSL, I need to do some more commands in PowerShell. Don't do them, if y
 
 ## 🔒 Security Notes
 
-- If you use `--auto-bind` he server binds to **all interfaces (0.0.0.0)**. Do **not** use it on untrusted networks.
+- If you use `--auto-bind` the server binds to **all interfaces (0.0.0.0)**. Do **not** use it on untrusted networks.
 - Each session has a **random 24-character token** to make guessing the URL unlikely.
 - Transfers are plain **HTTP (no TLS)** — avoid sending confidential files.
 - The server automatically shuts down after a completed upload/download.
