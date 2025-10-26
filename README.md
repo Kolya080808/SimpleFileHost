@@ -193,9 +193,9 @@ As I use WSL, I need to do some more commands in PowerShell. Don't do them, if y
 
 ## ⚠️ Limitations
 
-- Without `--max-size` flag, server automatically limits file size is 200MB
+- Without `--max-size` flag, server automatically limits file size to 200MB
 - Minimal HTTP implementation (no keep-alive)
-- Large or interrupted uploads may fail (I've tried to fix it, but I am not sure that it works well. At least 60gb worked well).
+- Large or interrupted uploads may fail (I've tried to fix it, but I am not sure that it works well. At least 60gb worked as it should work).
 - If you do not use any bind flags, the server binds 127.0.0.1, to make everything safe. Do not forget to bind to another address.
 
 ---
