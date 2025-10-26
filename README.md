@@ -33,7 +33,7 @@ This one-liner will help you to install from pre-built binary:
 mkdir temp; cd temp; wget https://github.com/Kolya080808/SimpleFileHost/releases/download/v2.0/release.zip; unzip release.zip; chmod +x install.sh; sudo ./install.sh; cd ../; rm -r temp
 ```
 
-The install script will ask if you want to install optional QR code support.
+The install script will ask if you want to install optional QR code support or no.
 
 ### 🛠️ Build from Source
 
@@ -44,36 +44,70 @@ Requirements:
 - libarchive (required)
 - Optional: libqrencode (for QR code display)
 
-Build with interactive dependency selection:
+#### Build:
+
+Firstly, clone the repository:
 
 ```bash
-git clone https://github.com/Kolya080808/SimpleFileHost.git
-cd SimpleFileHost
-chmod +x build.sh
-./build.sh
+git clone https://github.com/Kolya080808/SimpleFileHost.git; cd SimpleFileHost
 ```
 
+Then start the build script:
+
+```bash
+chmod +x build.sh; ./build.sh
+```
+
+After doing theese commands, you can delete the folder.
+
+One-liner:
+
+```bash
+git clone https://github.com/Kolya080808/SimpleFileHost.git; cd SimpleFileHost; chmod +x build.sh; ./build.sh
+```
+
+After doing this command, you can delete the folder.
+
 The build script will ask if you want to build with QR code support.
+
+
 
 ### ❌ Removing
 
 Uninstall the binary and optionally remove installed dependencies:
 
 ```bash
-wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh
-chmod +x remove.sh
-./remove.sh
-rm remove.sh
+wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh; chmod +x remove.sh; ./remove.sh; rm remove.sh
 ```
+
+The script will ask, if you want to delete dependencies.
 
 ---
 
 ## ▶️ Usage
 
-Run the program:
+To see all available options, run program with `--help` flag:
+```bash
+$ simplefilehost --help
+
+SimpleFileHost — lightweight local file sharing server
+
+Usage:
+  simplefilehost [options]
+
+Options:
+  --bind <address>        Bind to specific IP address (e.g., 0.0.0.0)
+  --auto-bind             Bind to 0.0.0.0 (make server reachable on all interfaces)
+  --max-size <bytes>      Limit maximum upload size (e.g., 100MB)
+  --verbose               Enable detailed log output to stderr
+  --help                  Show this help message and exit
+  --version               Show program version and exit
+```
+
+To run the program:
 
 ```bash
-simplefilehost
+$ simplefilehost
 ```
 
 You'll enter an interactive CLI with commands:
@@ -90,7 +124,7 @@ Available commands:
   send <file>              — Send file over Wi-Fi.
   senddir <dir>            — Send entire folder (auto zipped).
   get <output_file>        — Receive file from another device.
-  zip <target> [size]      — Archive.
+  zip <target>             — Archive.
   help                     — Show this help message.
   exit                     — Quit program.
 ```
@@ -132,13 +166,25 @@ The directory will be archived and automatically shared over HTTP.
 ```bash
 exit
 ```
+
 Exits program.
+
+
+### ⚠️ Example Usage
+
+
+
+https://github.com/user-attachments/assets/9005b00d-7e75-4474-9a14-4fde884ecbca
+
+
+
+As I use WSL, I need to do some more commands in PowerShell. Don't do them, if you don't use WSL.
 
 ---
 
 ## 🔒 Security Notes
 
-- The server can bind to **all interfaces (0.0.0.0)**. Do **not** use it on untrusted networks.
+- If you use `--auto-bind` he server binds to **all interfaces (0.0.0.0)**. Do **not** use it on untrusted networks.
 - Each session has a **random 24-character token** to make guessing the URL unlikely.
 - Transfers are plain **HTTP (no TLS)** — avoid sending confidential files.
 - The server automatically shuts down after a completed upload/download.
@@ -150,11 +196,12 @@ Exits program.
 - Without `--max-size` flag, server automatically limits file size is 200MB
 - Minimal HTTP implementation (no keep-alive)
 - Large or interrupted uploads may fail (I've tried to fix it, but I am not sure that it works well. At least 60gb worked well).
+- If you do not use any bind flags, the server binds 127.0.0.1, to make everything safe. Do not forget to bind to another address.
 
 ---
 ## P.S.
 
-I tried to make a TLS, but I do not have enough knowledge to do that. In case you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
+I tried to make a TLS, but I do not have enough knowledge to do that. I will try to implement this, but most likely I will not. In case you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
 
 ---
 
