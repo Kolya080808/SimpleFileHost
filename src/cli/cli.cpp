@@ -221,8 +221,6 @@ void repl(){
     signal(SIGINT, handle_sigint);
     std::string line;
     while(true){
-        // Сбросим флаги в начале каждой итерации REPL,
-        // чтобы предыдущая сессия не мешала новой.
         interrupted.store(false);
         server_finished = false;
 
@@ -307,4 +305,3 @@ void repl(){
         }
     }
 }
-

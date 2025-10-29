@@ -13,6 +13,8 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <algorithm>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 bool SimpleHTTPServer::set_socket_timeout(int fd, int seconds) {
     struct timeval timeout;
@@ -35,7 +37,13 @@ bool SimpleHTTPServer::set_socket_timeout(int fd, int seconds) {
 SimpleHTTPServer::SimpleHTTPServer(const ServerOptions &opt)
     : opts(opt), port(opt.port) {}
 
-SimpleHTTPServer::~SimpleHTTPServer() { stop(); }
+SimpleHTTPServer::~SimpleHTTPServer() { 
+    stop();
+    if (ssl_ctx) {
+        SSL_CTX_free(ssl_ctx);
+        ssl_ctx = nullptr;
+    }
+}
 
 void SimpleHTTPServer::add_client_socket(int fd) {
     std::lock_guard<std::mutex> lock(clients_mutex);
@@ -98,6 +106,50 @@ bool SimpleHTTPServer::start() {
         return false;
     }
 
+    if (get_tls_enabled()) {
+        SSL_library_init();
+        OpenSSL_add_all_algorithms();
+        SSL_load_error_strings();
+
+        ssl_ctx = SSL_CTX_new(TLS_server_method());
+        if (!ssl_ctx) {
+            vlog("Failed to create SSL_CTX");
+            return false;
+        }
+
+        std::string cert = get_tls_cert();
+        std::string key = get_tls_key();
+        if (cert.empty() || key.empty()) {
+            vlog("TLS enabled but cert/key not provided");
+            SSL_CTX_free(ssl_ctx);
+            ssl_ctx = nullptr;
+            return false;
+        }
+
+        if (SSL_CTX_use_certificate_file(ssl_ctx, cert.c_str(), SSL_FILETYPE_PEM) <= 0) {
+            vlog("Failed to load TLS certificate");
+            SSL_CTX_free(ssl_ctx);
+            ssl_ctx = nullptr;
+            return false;
+        }
+
+        if (SSL_CTX_use_PrivateKey_file(ssl_ctx, key.c_str(), SSL_FILETYPE_PEM) <= 0) {
+            vlog("Failed to load TLS private key");
+            SSL_CTX_free(ssl_ctx);
+            ssl_ctx = nullptr;
+            return false;
+        }
+
+        if (!SSL_CTX_check_private_key(ssl_ctx)) {
+            vlog("TLS private key does not match certificate public key");
+            SSL_CTX_free(ssl_ctx);
+            ssl_ctx = nullptr;
+            return false;
+        }
+
+        vlog("TLS initialized");
+    }
+
     running = true;
     std::thread(&SimpleHTTPServer::server_loop, this).detach();
 
@@ -124,7 +176,8 @@ void SimpleHTTPServer::stop() {
 
 std::string SimpleHTTPServer::host_url() const {
     std::ostringstream s;
-    s << "http://" << (opts.bind_address.empty() ? get_default_bind_address() : opts.bind_address)
+    bool tls = get_tls_enabled();
+    s << (tls ? "https://" : "http://") << (opts.bind_address.empty() ? get_default_bind_address() : opts.bind_address)
       << ":" << port << "/" << opts.token;
     return s.str();
 }
@@ -164,6 +217,28 @@ void SimpleHTTPServer::server_loop() {
                 continue;
             }
 
+            SSL* client_ssl = nullptr;
+            if (ssl_ctx && get_tls_enabled()) {
+                int flags = fcntl(fd, F_GETFL, 0);
+                fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
+
+                client_ssl = SSL_new(ssl_ctx);
+                if (!client_ssl) {
+                    vlog("Failed to create SSL object for client");
+                    close(fd);
+                    continue;
+                }
+                SSL_set_fd(client_ssl, fd);
+
+                if (SSL_accept(client_ssl) <= 0) {
+                    vlog("TLS handshake failed for incoming client");
+                    SSL_shutdown(client_ssl);
+                    SSL_free(client_ssl);
+                    close(fd);
+                    continue;
+                }
+            }
+
             set_socket_timeout(fd, opts.socket_timeout_seconds);
             
             fcntl(fd, F_SETFL, O_NONBLOCK);
@@ -177,8 +252,8 @@ void SimpleHTTPServer::server_loop() {
                 on_log(ss.str());
             }
 
-            std::thread([this, fd]() {
-                ClientHandler handler(opts, fd);
+            std::thread([this, fd, client_ssl]() {
+                ClientHandler handler(this->opts, fd, client_ssl);
                 handler.on_log = this->on_log;
                 handler.on_client_done = this->on_client_done;
                 handler.handle();
@@ -188,11 +263,4 @@ void SimpleHTTPServer::server_loop() {
         }
     }
     vlog("Server loop ended");
-}
-
-std::string SimpleHTTPServer::get_default_bind_address() const {
-    if (opts.public_access) {
-        return "0.0.0.0";
-    }
-    return "127.0.0.1";
 }

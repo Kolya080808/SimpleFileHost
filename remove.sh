@@ -4,7 +4,7 @@ set -e
 echo " SimpleFileHost — cleanup "
 echo "=========================="
 
-# Remove binary
+
 sudo rm -rf /usr/bin/simplefilehost || true
 echo "[OK] Binary removing complete."
 
@@ -25,22 +25,22 @@ if [[ "$OS" == "Linux" ]]; then
     else
         echo "Skipped."
     fi
-    
+
     echo ""
-    read -p "Remove runtime dependencies (libarchive)? [y/N]: " ans
+    read -p "Remove runtime dependencies (libarchive and OpenSSL dev files)? [y/N]: " ans
     if [[ "$ans" =~ ^[Yy]$ ]]; then
         if command -v apt &> /dev/null; then
-            sudo apt remove --purge -y libarchive-dev
+            sudo apt remove --purge -y libarchive-dev libssl-dev
         elif command -v dnf &> /dev/null; then
-            sudo dnf remove -y libarchive
+            sudo dnf remove -y libarchive openssl-devel
         elif command -v pacman &> /dev/null; then
-            sudo pacman -Rs --noconfirm libarchive
+            sudo pacman -Rs --noconfirm libarchive openssl
         fi
         echo "[OK] Runtime dependencies removed."
     else
         echo "Skipped."
     fi
-    
+
     echo ""
     read -p "Remove build dependencies (cmake, gcc, etc)? [y/N]: " ans
     if [[ "$ans" =~ ^[Yy]$ ]]; then
@@ -65,11 +65,11 @@ elif [[ "$OS" == "Darwin" ]]; then
     else
         echo "Skipped."
     fi
-    
+
     echo ""
-    read -p "Remove runtime dependencies (libarchive)? [y/N]: " ans
+    read -p "Remove runtime dependencies (libarchive and OpenSSL)? [y/N]: " ans
     if [[ "$ans" =~ ^[Yy]$ ]]; then
-        brew remove libarchive
+        brew remove libarchive openssl
         echo "[OK] Runtime dependencies removed."
     else
         echo "Skipped."

@@ -15,6 +15,7 @@ The program starts a tiny built-in HTTP server, generates a random token URL, an
 - 🧩 Archive and split large files into parts (`zip <target> <split_size>`)
 - 🖥️ Built-in minimal POSIX HTTP server **no external libraries**
 - 🧹 Auto-shutdown the server after transfer completion
+- 🔒 Optional TLS (HTTPS) support via `--tls <cert> <key>`
 
 ---
 ## ⬇️ Installation, 🛠️ Building or ❌Removing
@@ -25,6 +26,7 @@ Requirements:
 - POSIX system (Linux or macOS)
 - libarchive (required for archive operations)
 - Optional: libqrencode (for QR code display)
+- OpenSSL dev libraries (libssl-dev)
 
 
 This one-liner will help you to install from pre-built binary:
@@ -43,6 +45,7 @@ Requirements:
 - POSIX system (Linux or macOS)
 - libarchive (required)
 - Optional: libqrencode (for QR code display)
+- OpenSSL dev libraries (libssl-dev)
 
 #### Build:
 
@@ -70,9 +73,7 @@ After doing this command, you can delete the folder.
 
 The build script will ask if you want to build with QR code support.
 
-
-
-### ❌ Removing
+### ❌ Removng
 
 Uninstall the binary and optionally remove installed dependencies:
 
@@ -102,6 +103,7 @@ Options:
   --verbose               Enable detailed log output to stderr
   --help                  Show this help message and exit
   --version               Show program version and exit
+  --tls <cert> <key>      Enable TLS (HTTPS) using the provided certificate and private key files
 ```
 
 To run the program:
@@ -136,6 +138,15 @@ send <path_to_file>
 The server will print a URL (and QR code if enabled).
 Open it on another device in the same Wi-Fi/LAN network to download the file.
 
+TLS usage example:
+```bash
+simplefilehost --tls server.crt server.key
+# then in REPL:
+send myfile.zip
+```
+
+Open the printed URL. If your certificate is self-signed, your browser will warn — accept/allow to test.
+
 ```bash
 get <output_filename>
 ```
@@ -169,7 +180,6 @@ exit
 
 Exits program.
 
-
 ### ⚠️ Example Usage
 
 
@@ -186,7 +196,7 @@ As I use WSL, I need to do some more commands in PowerShell. Don't do them, if y
 
 - If you use `--auto-bind` the server binds to **all interfaces (0.0.0.0)**. Do **not** use it on untrusted networks.
 - Each session has a **random 24-character token** to make guessing the URL unlikely.
-- Transfers are plain **HTTP (no TLS)** — avoid sending confidential files.
+- Transfers are plain **HTTP (no TLS)** by default — avoid sending confidential files unless you explicitly enable TLS with `--tls` and provide a valid cert/key.
 - The server automatically shuts down after a completed upload/download.
 
 ---

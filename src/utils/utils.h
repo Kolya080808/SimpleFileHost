@@ -13,4 +13,3 @@ std::string random_token(size_t n);
 long long parse_size(const std::string &s);
 
 #endif
-

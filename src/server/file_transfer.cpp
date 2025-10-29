@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <poll.h>
+#include <openssl/ssl.h>
 
 std::string format_size(long long bytes) {
     const char* units[] = {"B", "KB", "MB", "GB", "TB"};
@@ -37,7 +38,7 @@ int calculate_percentage(long long current, long long total) {
 
 bool stream_file(int fd, const std::string& filepath, const std::string& content_type,
                 const std::string& filename, bool as_attachment,
-                std::atomic<bool>* interrupted, int timeout_seconds) {
+                std::atomic<bool>* interrupted, int timeout_seconds, SSL* ssl) {
     struct stat st;
     if (::stat(filepath.c_str(), &st) != 0) {
         vlog("stream_file: stat failed for " + filepath);
@@ -85,6 +86,22 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
             return false;
         }
 
+        if (ssl) {
+            int r = SSL_write(ssl, headers.c_str() + header_sent, headers.size() - header_sent);
+            if (r > 0) {
+                header_sent += r;
+                continue;
+            } else {
+                int err = SSL_get_error(ssl, r);
+                if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                    usleep(10000);
+                    continue;
+                }
+                vlog("stream_file: Header SSL_write failed");
+                return false;
+            }
+        }
+
         ssize_t sent = ::send(fd, headers.c_str() + header_sent, headers.size() - header_sent, MSG_NOSIGNAL);
         if (sent <= 0) {
             if (errno == EINTR) continue;
@@ -109,7 +126,6 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
                 return false;
             }
 
-            // --- REPLACED: use inactivity (no-progress) timeout instead of absolute elapsed ---
             auto current_time = std::chrono::steady_clock::now();
             if (total_sent > last_sent_bytes) {
                 last_progress_time = current_time;
@@ -121,31 +137,51 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
                 close(file_fd);
                 return false;
             }
-            // --- end replacement ---
 
             auto op_start_time = std::chrono::steady_clock::now();
             bool op_completed = false;
 
-            while (!op_completed) {
-                if (interrupted && *interrupted) {
-                    vlog("File send interrupted by user");
+            if (ssl) {
+                const size_t bufsize = 64 * 1024;
+                std::vector<char> buf(bufsize);
+                ssize_t rr = pread(file_fd, buf.data(), bufsize, offset);
+                if (rr < 0) {
+                    if (errno == EINTR) continue;
+                    vlog("stream_file: read failed");
                     close(file_fd);
                     return false;
                 }
-
-                auto op_current_time = std::chrono::steady_clock::now();
-                auto op_elapsed = std::chrono::duration_cast<std::chrono::seconds>(op_current_time - op_start_time);
-                if (op_elapsed.count() > timeout_seconds) {
-                    vlog("Send operation timeout");
-                    close(file_fd);
-                    return false;
+                ssize_t to_send = rr;
+                ssize_t sent_chunk = 0;
+                while (sent_chunk < to_send) {
+                    if (interrupted && *interrupted) {
+                        vlog("File send interrupted by user");
+                        close(file_fd);
+                        return false;
+                    }
+                    int r = SSL_write(ssl, buf.data() + sent_chunk, to_send - sent_chunk);
+                    if (r > 0) {
+                        sent_chunk += r;
+                        total_sent += r;
+                        offset += r;
+                        op_completed = true;
+                    } else {
+                        int err = SSL_get_error(ssl, r);
+                        if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                            usleep(10000);
+                            continue;
+                        }
+                        vlog("stream_file: SSL_write failed");
+                        close(file_fd);
+                        return false;
+                    }
                 }
+            } else {
 
                 ssize_t result = sendfile(fd, file_fd, &offset, file_size - total_sent);
 
                 if (result > 0) {
                     total_sent += result;
-                    // update progress tracking for inactivity timeout
                     last_progress_time = std::chrono::steady_clock::now();
                     last_sent_bytes = total_sent;
                     op_completed = true;
@@ -167,6 +203,7 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
                     close(file_fd);
                     return false;
                 }
+
             }
 
             auto report_time = std::chrono::steady_clock::now();
@@ -211,7 +248,6 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
             return false;
         }
 
-        // --- REPLACED: use inactivity (no-progress) timeout instead of absolute elapsed ---
         auto current_time = std::chrono::steady_clock::now();
         if (total_sent > last_sent_bytes) {
             last_progress_time = current_time;
@@ -223,7 +259,6 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
             file.close();
             return false;
         }
-        // --- end replacement ---
 
         ssize_t bytes_read = file.gcount();
         ssize_t chunk_sent = 0;
@@ -253,27 +288,47 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
                     return false;
                 }
 
-                ssize_t sent = ::send(fd, buffer.data() + chunk_sent, bytes_read - chunk_sent, MSG_NOSIGNAL);
-                if (sent > 0) {
-                    chunk_sent += sent;
-                    total_sent += sent;
-                    // update progress tracking for inactivity timeout
-                    last_progress_time = std::chrono::steady_clock::now();
-                    last_sent_bytes = total_sent;
-                    op_completed = true;
-                } else if (sent == 0) {
-                    vlog("send returned 0 (connection closed)");
-                    file.close();
-                    return false;
-                } else {
-                    if (errno == EINTR) continue;
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                        usleep(10000);
-                        continue;
+                if (ssl) {
+                    int r = SSL_write(ssl, buffer.data() + chunk_sent, bytes_read - chunk_sent);
+                    if (r > 0) {
+                        chunk_sent += r;
+                        total_sent += r;
+                        last_progress_time = std::chrono::steady_clock::now();
+                        last_sent_bytes = total_sent;
+                        op_completed = true;
+                    } else {
+                        int err = SSL_get_error(ssl, r);
+                        if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                            usleep(10000);
+                            continue;
+                        }
+                        vlog("stream_file: SSL_write failed");
+                        file.close();
+                        return false;
                     }
-                    vlog("stream_file: send failed");
-                    file.close();
-                    return false;
+                } else {
+
+                    ssize_t sent = ::send(fd, buffer.data() + chunk_sent, bytes_read - chunk_sent, MSG_NOSIGNAL);
+                    if (sent > 0) {
+                        chunk_sent += sent;
+                        total_sent += sent;
+                        last_progress_time = std::chrono::steady_clock::now();
+                        last_sent_bytes = total_sent;
+                        op_completed = true;
+                    } else if (sent == 0) {
+                        vlog("send returned 0 (connection closed)");
+                        file.close();
+                        return false;
+                    } else {
+                        if (errno == EINTR) continue;
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            usleep(10000);
+                            continue;
+                        }
+                        vlog("stream_file: send failed");
+                        file.close();
+                        return false;
+                    }
                 }
             }
 
@@ -310,7 +365,7 @@ bool stream_file(int fd, const std::string& filepath, const std::string& content
 
 bool stream_receive_file(int fd, long long content_length, const std::string& boundary,
                         const std::string& outname, long long max_size,
-                        std::atomic<bool>* interrupted, int timeout_seconds) {
+                        std::atomic<bool>* interrupted, int timeout_seconds, SSL* ssl) {
     std::string temp_path = outname + ".tmp." + random_token(8);
     vlog("Starting file receive: " + outname + " (" + format_size(content_length) + " expected)");
 
@@ -407,7 +462,26 @@ bool stream_receive_file(int fd, long long content_length, const std::string& bo
             }
 
             ssize_t to_read = std::min((long long)buffer_size, content_length - total_received);
-            ssize_t bytes_read = ::recv(fd, buffer.data(), to_read, 0);
+            ssize_t bytes_read = 0;
+            if (ssl) {
+                int r = SSL_read(ssl, buffer.data(), to_read);
+                if (r > 0) {
+                    bytes_read = r;
+                } else {
+                    int err = SSL_get_error(ssl, r);
+                    if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                        usleep(10000);
+                        continue;
+                    } else {
+                        vlog("Receive failed (SSL_read)");
+                        file.close();
+                        unlink(temp_path.c_str());
+                        return false;
+                    }
+                }
+            } else {
+                bytes_read = ::recv(fd, buffer.data(), to_read, 0);
+            }
 
             if (bytes_read > 0) {
                 total_received += bytes_read;
@@ -547,4 +621,3 @@ bool stream_receive_file(int fd, long long content_length, const std::string& bo
     vlog("File receive completed: " + outname + " (" + format_size(total_received) + ")");
     return true;
 }
-

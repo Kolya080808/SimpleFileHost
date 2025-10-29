@@ -7,7 +7,7 @@
 #include "utils/network_utils.h"
 #include "cli/cli.h"
 
-static const std::string VERSION = "1.5";
+static const std::string VERSION = "2.0";
 
 enum ExitCode {
     EXIT_SUCCESS_OK = 0,
@@ -28,6 +28,7 @@ void print_global_help() {
     "  --verbose               Enable detailed log output to stderr\n"
     "  --help                  Show this help message and exit\n"
     "  --version               Show program version and exit\n"
+    "  --tls <cert> <key>      Enable TLS (HTTPS) using the provided certificate and private key files\n"
     << std::endl;
 }
 
@@ -39,6 +40,10 @@ int main(int argc, char **argv) {
 
     long long default_max_size = 200LL * 1024LL * 1024LL;
     long long max_size = default_max_size;
+
+    std::string tls_cert_arg;
+    std::string tls_key_arg;
+    bool tls_enabled_arg = false;
 
     if (argc > 1) {
         std::vector<std::string> args(argv + 1, argv + argc);
@@ -84,6 +89,16 @@ int main(int argc, char **argv) {
                 max_size = v;
                 vlog("Max upload size set to " + std::to_string(max_size) + " bytes");
             }
+            else if (a == "--tls") {
+                if (i + 2 >= args.size()) {
+                    elog("--tls requires two arguments: <cert> <key>");
+                    return EXIT_INVALID_ARGUMENT;
+                }
+                tls_cert_arg = args[++i];
+                tls_key_arg = args[++i];
+                tls_enabled_arg = true;
+                vlog("TLS enabled with cert: " + tls_cert_arg + " key: " + tls_key_arg);
+            }
             else if (a.rfind("--", 0) == 0) {
                 elog("Unknown option: " + a);
                 std::cerr << "Use --help for usage information." << std::endl;
@@ -102,6 +117,13 @@ int main(int argc, char **argv) {
     }
 
     set_default_bind_address(bind_address);
+
+    if (tls_enabled_arg) {
+        set_tls_enabled(true);
+        set_tls_files(tls_cert_arg, tls_key_arg);
+    } else {
+        set_tls_enabled(false);
+    }
 
     std::cout << "SimpleFileHost — local file sharing over Wi-Fi\n";
     std::cout << "Listening on: " << bind_address << std::endl;

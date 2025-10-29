@@ -10,9 +10,14 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <cstring>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
-ClientHandler::ClientHandler(const ServerOptions& opts, int fd) 
-    : opts_(opts), fd_(fd) {}
+ClientHandler::ClientHandler(const ServerOptions& opts, int fd, SSL* ssl)
+    : opts_(opts), fd_(fd)
+{
+    ssl_ = ssl;
+}
 
 bool ClientHandler::read_headers(std::string& headers) {
     char chunk[4096];
@@ -44,6 +49,23 @@ bool ClientHandler::read_headers(std::string& headers) {
         }
         if (poll_res == 0) continue;
         
+        if (ssl_) {
+            int rr = SSL_read(ssl_, chunk, sizeof(chunk));
+            if (rr > 0) {
+                headers.append(chunk, rr);
+                if (headers.find("\r\n\r\n") != std::string::npos) {
+                    return true;
+                }
+                continue;
+            } else {
+                int err = SSL_get_error(ssl_, rr);
+                if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                    continue;
+                }
+                return false;
+            }
+        }
+
         r = recv(fd_, chunk, sizeof(chunk), 0);
         if (r > 0) {
             headers.append(chunk, r);
@@ -75,6 +97,21 @@ void ClientHandler::send_response(const std::string& response) {
             break;
         }
         
+        if (ssl_) {
+            int r = SSL_write(ssl_, response.c_str() + sent, response.size() - sent);
+            if (r > 0) {
+                sent += r;
+                continue;
+            } else {
+                int err = SSL_get_error(ssl_, r);
+                if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                    usleep(10000);
+                    continue;
+                }
+                break;
+            }
+        }
+
         ssize_t result = send(fd_, response.c_str() + sent, response.size() - sent, MSG_NOSIGNAL);
         if (result > 0) {
             sent += result;
@@ -135,7 +172,7 @@ void ClientHandler::handle_get_request(const std::string& path, const std::strin
         
         std::string filename = file_basename(opts_.path);
         bool success = stream_file(fd_, opts_.path, mime_type(opts_.path), filename, true, 
-                                 opts_.interrupted);
+                                 opts_.interrupted, opts_.socket_timeout_seconds, ssl_);
         if (success) {
             if (on_log) on_log("File served to client: " + filename);
             if (on_client_done) on_client_done();
@@ -152,7 +189,7 @@ void ClientHandler::handle_get_request(const std::string& path, const std::strin
             mime_type(opts_.path).rfind("text/", 0) == 0) {
 
             bool success = stream_file(fd_, opts_.path, "text/plain; charset=utf-8", "", false, 
-                                     opts_.interrupted);
+                                     opts_.interrupted, opts_.socket_timeout_seconds, ssl_);
             if (!success) {
                 if (on_log) on_log("Raw file serve failed for " + get_client_ip(fd_));
                 send_error(404, "404 File Not Found");
@@ -218,7 +255,7 @@ void ClientHandler::handle_post_request(const std::string& path, const std::stri
 
     long long content_len = extract_content_length(headers);
     bool success = stream_receive_file(fd_, content_len, boundary, outname, opts_.max_size, 
-                                     opts_.interrupted);
+                                     opts_.interrupted, opts_.socket_timeout_seconds, ssl_);
     if (success) {
         if (on_log) on_log("File uploaded from " + get_client_ip(fd_) + ": " + outname);
         std::string success_msg = "<html><body><h2>Upload successful!</h2></body></html>";
@@ -242,6 +279,11 @@ void ClientHandler::handle() {
     std::string headers;
     if (!read_headers(headers)) {
         if (on_log) on_log("Failed to read headers from " + get_client_ip(fd_));
+        if (ssl_) {
+            SSL_shutdown(ssl_);
+            SSL_free(ssl_);
+            ssl_ = nullptr;
+        }
         close(fd_);
         return;
     }
@@ -256,6 +298,11 @@ void ClientHandler::handle() {
     if (opts_.max_size > 0 && content_len > 0 && content_len > opts_.max_size) {
         if (on_log) on_log("Content length exceeds max size from " + get_client_ip(fd_));
         send_error(413, "413 Payload Too Large");
+        if (ssl_) {
+            SSL_shutdown(ssl_);
+            SSL_free(ssl_);
+            ssl_ = nullptr;
+        }
         close(fd_);
         return;
     }
@@ -268,6 +315,11 @@ void ClientHandler::handle() {
         send_error(405, "405 Method Not Allowed");
     }
 
+    if (ssl_) {
+        SSL_shutdown(ssl_);
+        SSL_free(ssl_);
+        ssl_ = nullptr;
+    }
     close(fd_);
     if (on_log) on_log("Client connection closed: " + get_client_ip(fd_));
 }

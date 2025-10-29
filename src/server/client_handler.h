@@ -4,17 +4,26 @@
 #include "server.h"
 #include <string>
 
+
+#include <openssl/ssl.h>
+
+
 class ClientHandler {
 public:
-    ClientHandler(const ServerOptions& opts, int fd);
+
+    ClientHandler(const ServerOptions& opts, int fd, SSL* ssl = nullptr);
+
     void handle();
-    
+
     std::function<void(const std::string&)> on_log;
     std::function<void()> on_client_done;
 
 private:
     ServerOptions opts_;
     int fd_;
+
+    SSL* ssl_;
+
     
     bool read_headers(std::string& headers);
     void handle_get_request(const std::string& path, const std::string& headers);
