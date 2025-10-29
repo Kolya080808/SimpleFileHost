@@ -73,7 +73,7 @@ After doing this command, you can delete the folder.
 
 The build script will ask if you want to build with QR code support.
 
-### ❌ Removng
+### ❌ Removing
 
 Uninstall the binary and optionally remove installed dependencies:
 
