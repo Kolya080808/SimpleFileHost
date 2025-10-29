@@ -211,7 +211,8 @@ As I use WSL, I need to do some more commands in PowerShell. Don't do them, if y
 ---
 ## P.S.
 
-I tried to make a TLS, but I do not have enough knowledge to do that. I will try to implement this, but most likely I will not. In case you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
+I made TLS, but if I still want to send the project to debian packet manager, I need to code a bit more. So,
+if you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
 
 ---
 
