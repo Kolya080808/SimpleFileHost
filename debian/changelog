@@ -1,4 +1,4 @@
-simplefilehost (2.0-1) UNRELEASED; urgency=medium
+simplefilehost (2.0-1) unstable; urgency=medium
 
   * New upstream release 2.0.
     - Major refactor of server and CLI modules.
