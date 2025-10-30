@@ -3,6 +3,7 @@ project(SimpleFileHost)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
 option(NO_QRENCODE "Disable QR code support" OFF)
 
