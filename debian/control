@@ -1,9 +1,11 @@
 Source: simplefilehost
+Vcs-Git: https://github.com/Kolya080808/SimpleFileHost.git
+Vcs-Browser: https://github.com/Kolya080808/SimpleFileHost
 Section: net
 Priority: optional
 Maintainer: Nikolay Kravtsov <kravtsovnd08@gmail.com>
 Build-Depends: debhelper-compat (= 13), cmake, libssl-dev, libarchive-dev, libqrencode-dev
-Standards-Version: 4.7.0
+Standards-Version: 4.7.2
 Homepage: https://github.com/Kolya080808/SimpleFileHost
 Rules-Requires-Root: no
 
