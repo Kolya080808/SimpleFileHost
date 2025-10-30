@@ -211,8 +211,8 @@ As I use WSL, I need to do some more commands in PowerShell. Don't do them, if y
 ---
 ## P.S.
 
-I made TLS, but if I still want to send the project to debian packet manager, I need to code a bit more. So,
-if you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
+I've added the project (debian branch) to the [debian mentors](https://mentors.debian.net/package/simplefilehost/). Any help would be great. 
+If you want and can help, or if you have suggestions for improvements, you can contact me via [telegram](https://kolya080808.t.me/).
 
 ---
 
