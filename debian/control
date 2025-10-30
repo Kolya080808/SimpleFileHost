@@ -1,0 +1,17 @@
+Source: simplefilehost
+Section: net
+Priority: optional
+Maintainer: Nikolay Kravtsov <kravtsovnd08@gmail.com>
+Build-Depends: debhelper-compat (= 13), cmake, libssl-dev, libarchive-dev, libqrencode-dev
+Standards-Version: 4.7.0
+Homepage: https://github.com/Kolya080808/SimpleFileHost
+Rules-Requires-Root: no
+
+Package: simplefilehost
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Lightweight file sharing server with TLS and QR support
+ SimpleFileHost is a minimal C++ HTTP/HTTPS file-sharing server.
+ It supports QR code generation for LAN access, automatic binding,
+ and secure TLS transfers. Suitable for local file exchange and demos.
+

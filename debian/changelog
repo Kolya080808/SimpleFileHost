@@ -1,0 +1,12 @@
+simplefilehost (2.0-1) unstable; urgency=medium
+
+  * Major release with significant new features and improvements, bug fixes and security bugs fixes.
+  * TLS/HTTPS support via OpenSSL for secure file transfers.
+  * New CLI options: --tls, --auto-bind, --max-size, --verbose, --bind.
+  * Added zip/archive functionality, including directory sharing.
+  * Improved dependency management and build scripts.
+  * Enhanced documentation and usage instructions.
+  * Auto-shutdown server after transfer completion.
+  * Security improvements: random one-time token port and URLs, bind address controls, upload size limits.
+
+ -- Kolya080808 <kravtsovnd08@gmail.com>  Thu, 30 Oct 2025 18:20:40 +0000

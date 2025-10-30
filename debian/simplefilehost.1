@@ -1,0 +1,78 @@
+.TH SIMPLEFILEHOST 1 "October 2025" "Version 2.0" "User Commands"
+.SH NAME
+simplefilehost \- lightweight local file sharing server
+.SH SYNOPSIS
+.B simplefilehost
+[\fIoptions\fR]
+.SH DESCRIPTION
+.B SimpleFileHost
+is a minimal, fast file sharing server for local networks. It enables sending and receiving files or folders via a built-in HTTP server, with optional QR code display and TLS support for secure transfers.
+
+.SH OPTIONS
+.TP
+.BR --bind " <address>"
+Bind to a specific IP address (default: 127.0.0.1).
+.TP
+.BR --auto-bind
+Bind to 0.0.0.0 (make server reachable on all interfaces).
+.TP
+.BR --max-size " <bytes>"
+Limit maximum upload size (e.g., 100MB).
+.TP
+.BR --verbose
+Enable detailed log output to stderr.
+.TP
+.BR --help
+Show help message and exit.
+.TP
+.BR --version
+Show program version and exit.
+.TP
+.BR --tls " <cert> <key>"
+Enable TLS (HTTPS) using the provided certificate and private key files.
+
+.SH COMMANDS
+Commands are available in the interactive CLI after starting the program:
+.TP
+.BR send " <file>"
+Send a file over Wi-Fi.
+.TP
+.BR senddir " <dir>"
+Send an entire folder (auto zipped).
+.TP
+.BR get " <output_file>"
+Receive a file from another device.
+.TP
+.BR zip " <target>"
+Archive a file or directory.
+.TP
+.BR help
+Show help message.
+.TP
+.BR exit
+Quit the program.
+
+.SH EXAMPLES
+Send a file:
+.PP
+.B simplefilehost
+.PP
+Then in the CLI:
+.PP
+.B send myfile.zip
+.PP
+Receive a file:
+.PP
+.B get output.zip
+
+.SH DEPENDENCIES
+Requires \fIlibarchive\fR and \fIOpenSSL\fR. Optional: \fIlibqrencode\fR for QR code display.
+
+.SH AUTHOR
+Kolya080808 <https://github.com/Kolya080808>
+
+.SH HOMEPAGE
+https://github.com/Kolya080808/SimpleFileHost
+
+.SH LICENSE
+MIT License
