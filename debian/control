@@ -16,4 +16,3 @@ Description: Lightweight file sharing server with TLS and QR support
  SimpleFileHost is a minimal C++ HTTP/HTTPS file-sharing server.
  It supports QR code generation for LAN access, automatic binding,
  and secure TLS transfers. Suitable for local file exchange and demos.
-
