@@ -22,6 +22,8 @@ The program starts a tiny built-in HTTP server, generates a random token URL, an
 
 ### ⬇️ Installation
 
+#### From GitHub release
+
 Requirements:
 - POSIX system (Linux or macOS)
 - libarchive (required for archive operations)
@@ -36,6 +38,51 @@ mkdir temp; cd temp; wget https://github.com/Kolya080808/SimpleFileHost/releases
 ```
 
 The install script will ask if you want to install optional QR code support or no.
+
+#### From Debian Mentors
+
+Here everything installs by computer automatically. The only thing that you need is devscripts:
+
+```bash
+sudo apt-get install devscripts; mkdir tmp/; cd tmp/
+```
+
+Then, you need to install my pubkey from debian keyserver:
+
+```bash
+gpg --keyserver hkps://mentors.debian.net --recv-keys 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
+```
+
+After that, import that as debian mentor's key:
+
+```bash
+gpg --export 466A7895D13BBA22B05EF3BCADD15E2243E24BA0 | sudo gpg --dearmor -o /usr/share/keyrings/debian-mantainers.gpg
+```
+
+Or, you if you don't want to, just skip this step and go further.
+
+Then, you can download and install it:
+
+```bash
+dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-1.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-1_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
+```
+Without the key:
+```bash
+dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-1.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-1_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts
+```
+
+Then you have to wait a bit, and you are ready to go!
+
+
+##### One-liner:
+
+```bash
+sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; gpg --keyserver hkps://mentors.debian.net --recv-keys 466A7895D13BBA22B05EF3BCADD15E2243E24BA0; gpg --export 466A7895D13BBA22B05EF3BCADD15E2243E24BA0 | sudo gpg --dearmor -o /usr/share/keyrings/debian-mantainers.gpg; dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-1.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-1_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
+```
+Without installing keys:
+```bash
+sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-1.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-1_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y
+```
 
 ### 🛠️ Build from Source
 
@@ -82,6 +129,12 @@ wget https://github.com/Kolya080808/SimpleFileHost/raw/main/remove.sh; chmod +x 
 ```
 
 The script will ask, if you want to delete dependencies.
+
+If you've installed it from Debian mentors, here is command that removes everything:
+
+```bash
+sudo dpkg -P simplefilehost
+```
 
 ---
 
