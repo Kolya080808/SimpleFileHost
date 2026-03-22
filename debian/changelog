@@ -1,4 +1,4 @@
-simplefilehost (2.0-1) unstable; urgency=medium
+simplefilehost (2.0-2) unstable; urgency=medium
 
   * New upstream release 2.0.
     - Major refactor of server and CLI modules.
@@ -10,5 +10,6 @@ simplefilehost (2.0-1) unstable; urgency=medium
     - Auto-shutdown server after transfer completion.
     - Security improvements: random one-time token ports and URLs,
       bind-address controls, and upload size limits.
+    - Edited README. 
 
  -- Kolya080808 <kravtsovnd08@gmail.com>  Thu, 30 Oct 2025 18:20:40 +0000
