@@ -64,11 +64,11 @@ Or, you if you don't want to, just skip this step and go further.
 Then, you can download and install it:
 
 ```bash
-dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-2.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-2_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
+dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-4.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-4_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
 ```
 Without the key:
 ```bash
-dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-2.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-2_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts
+dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-4.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-4_amd64.deb; cd ../../; rm -r tmp; sudo apt remove devscripts
 ```
 
 Then you have to wait a bit, and you are ready to go!
@@ -77,11 +77,12 @@ Then you have to wait a bit, and you are ready to go!
 ##### One-liner:
 
 ```bash
-sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; gpg --keyserver hkps://mentors.debian.net --recv-keys 466A7895D13BBA22B05EF3BCADD15E2243E24BA0; gpg --export 466A7895D13BBA22B05EF3BCADD15E2243E24BA0 | sudo gpg --dearmor -o /usr/share/keyrings/debian-mantainers.gpg; dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-2.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-2_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
+sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; gpg --keyserver hkps://mentors.debian.net --recv-keys 466A7895D13BBA22B05EF3BCADD15E2243E24BA0; gpg --export 466A7895D13BBA22B05EF3BCADD15E2243E24BA0 | sudo gpg --dearmor -o /usr/share/keyrings/debian-mantainers.gpg; dget https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-4.dsc; cd simplefilehost-2.0/; sudo apt build-dep . 
+debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-4_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y; gpg --delete-key 466A7895D13BBA22B05EF3BCADD15E2243E24BA0
 ```
 Without installing keys:
 ```bash
-sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-2.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-2_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y
+sudo apt-get install devscripts -y; mkdir tmp/; cd tmp/; dget -u https://mentors.debian.net/debian/pool/main/s/simplefilehost/simplefilehost_2.0-4.dsc; cd simplefilehost-2.0/; sudo apt build-dep .; debuild -us -uc -ui; sudo dpkg -i ../simplefilehost_2.0-4_amd64.deb; cd ../../; rm -r tmp; sudo apt remove --purge devscripts -y
 ```
 
 ### 🛠️ Build from Source
