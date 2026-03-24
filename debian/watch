@@ -1,8 +1,5 @@
-Version: 5
-Search-Mode: plain
-Pgp-Mode: auto
-Pgp-Sig-Url-Mangle: s/$/.asc/
-Uversion-Mangle: s/^v//; s/(\d+\.\d+)\.\d+\.\d+/$1/
-Source: https://api.github.com/repos/Kolya080808/SimpleFileHost/releases?per_page=100
-Matching-Pattern: https://github.com/Kolya080808/SimpleFileHost/releases/download/@ANY_VERSION@/SimpleFileHost-@ANY_VERSION@@ARCHIVE_EXT@
-Filename-Mangle: s%.*/SimpleFileHost-([0-9.]+)\.tar\.gz%simplefilehost-$1.tar.gz%
+version=5
+opts=searchmode=plain,pgpmode=auto,pgpsigurlmangle=s/$/.asc/,\
+uversionmangle=s/^v//;s/(\d+\.\d+)\.\d+\.\d+/$1/ \
+https://api.github.com/repos/Kolya080808/SimpleFileHost/releases?per_page=100 \
+https://github.com/Kolya080808/SimpleFileHost/releases/download/@ANY_VERSION@/SimpleFileHost-@ANY_VERSION@@ARCHIVE_EXT@
