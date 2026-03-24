@@ -1,4 +1,4 @@
-simplefilehost (2.0-3) unstable; urgency=medium
+simplefilehost (2.0-4) unstable; urgency=medium
 
   * New upstream release 2.0.
     - Major refactor of server and CLI modules.
@@ -10,6 +10,6 @@ simplefilehost (2.0-3) unstable; urgency=medium
     - Auto-shutdown server after transfer completion.
     - Security improvements: random one-time token ports and URLs,
       bind-address controls, and upload size limits.
-    - Edited README, debian/, made normal structure, fixed lintian warnings.
+    - Edited README, debian/, made normal structure, fixed all lintian warnings.
 
  -- Nikolay Kravtsov <kravtsovnd08@gmail.com>  Mon, 23 Mar 2026 12:00:00 +0000
