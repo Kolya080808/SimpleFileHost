@@ -1,9 +1,2 @@
 version=5
-
-opts=\
-searchmode=plain,\
-pgpmode=next,\
-pgpsigurlmangle=s/$/.asc/,\
-uversionmangle=s/^v// \
-https://api.github.com/repos/Kolya080808/SimpleFileHost/releases?per_page=100 \
-https://github.com/Kolya080808/SimpleFileHost/releases/download/v?(\d[\d\.]*)/SimpleFileHost-.*@ARCHIVE_EXT@
+opts=searchmode=plain,pgpmode=next,pgpsigurlmangle=s/$/.asc/,uversionmangle=s/^v// https://api.github.com/repos/Kolya080808/SimpleFileHost/releases?per_page=100 https://github.com/Kolya080808/SimpleFileHost/releases/download/v?(\d[\d\.]*)/SimpleFileHost-.*@ARCHIVE_EXT@
