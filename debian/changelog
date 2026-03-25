@@ -1,15 +1,5 @@
-simplefilehost (2.0-4) unstable; urgency=medium
+simplefilehost (2.0-1) unstable; urgency=medium
 
-  * New upstream release 2.0.
-    - Major refactor of server and CLI modules.
-    - TLS/HTTPS support via OpenSSL for secure file transfers.
-    - New CLI options: --tls, --auto-bind, --max-size, --verbose, --bind.
-    - Added zip/archive functionality, including directory sharing.
-    - Improved dependency management and build scripts.
-    - Enhanced documentation and usage instructions.
-    - Auto-shutdown server after transfer completion.
-    - Security improvements: random one-time token ports and URLs,
-      bind-address controls, and upload size limits.
-    - Edited README, debian/, made normal structure, fixed all lintian warnings.
+  * Initial release (Closes: #1131860)
 
- -- Nikolay Kravtsov <kravtsovnd08@gmail.com>  Mon, 23 Mar 2026 12:00:00 +0000
+ -- Nikolay Kravtsov <kravtsovnd08@gmail.com>  Wed, 25 Mar 2026 12:00:00 +0000
