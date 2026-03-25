@@ -1,6 +1,6 @@
 Source: simplefilehost
-Vcs-Git: https://github.com/Kolya080808/SimpleFileHost.git
-Vcs-Browser: https://github.com/Kolya080808/SimpleFileHost
+Vcs-Git: https://github.com/Kolya080808/SimpleFileHost.git -b debian
+Vcs-Browser: https://github.com/Kolya080808/SimpleFileHost/tree/debian
 Section: net
 Priority: optional
 Maintainer: Debian Mentors <package@mentors.debian.net>
