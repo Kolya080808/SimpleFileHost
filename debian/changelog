@@ -1,5 +1,6 @@
 simplefilehost (2.0-1) unstable; urgency=medium
 
   * Initial release (Closes: #1131860)
+    - Fixed some things based on comments from DD.
 
  -- Nikolay Kravtsov <kravtsovnd08@gmail.com>  Wed, 25 Mar 2026 12:00:00 +0000
