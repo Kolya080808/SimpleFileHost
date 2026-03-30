@@ -3,7 +3,7 @@ Vcs-Git: https://github.com/Kolya080808/SimpleFileHost.git -b debian
 Vcs-Browser: https://github.com/Kolya080808/SimpleFileHost/tree/debian
 Section: net
 Maintainer: Nikolay Kravtsov <kravtsovnd08@gmail.com>
-Build-Depends: debhelper-compat (= 13), cmake, libssl-dev, libarchive-dev, libqrencode-dev, pkgconf | pkg-config
+Build-Depends: debhelper-compat (= 13), cmake, libssl-dev, libarchive-dev, libqrencode-dev, pkgconf
 Standards-Version: 4.7.3
 Homepage: https://github.com/Kolya080808/SimpleFileHost
 
